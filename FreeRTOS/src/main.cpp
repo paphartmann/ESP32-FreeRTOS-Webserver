@@ -50,7 +50,9 @@ TaskHandle_t serverTask;
 TaskHandle_t Task1Handle = NULL;
 TaskHandle_t Task2Handle = NULL;
 TaskHandle_t Task3Handle = NULL;
+TaskHandle_t TaskIntHandle = NULL;
 
+void Interrupting_Function(void *pvParameters);
 void IR_Sensor_Function(void *pvParameters);
 void DHT_Sensor_Function(void *pvParameters);
 void Emergency_Function(void *pvParameters);
@@ -101,6 +103,7 @@ void setup() {
   xTaskCreatePinnedToCore(IR_Sensor_Function, "Task1", 8192, NULL, 2, &Task1Handle, 0);
   xTaskCreatePinnedToCore(DHT_Sensor_Function, "Task2", 8192, NULL, 2, &Task2Handle, 0);
   xTaskCreatePinnedToCore(Emergency_Function, "Task3", 8192, NULL, 3, &Task3Handle, 0);
+  xTaskCreatePinnedToCore(Interrupting_Function, "InterruptingTask", 8192, NULL, 3, &TaskIntHandle, 0);
 
   // Create a server task pinned to core 1
   xTaskCreatePinnedToCore(ServerTask, "serverTask", 4096, NULL, 3, &serverTask, 1);
@@ -333,4 +336,9 @@ void EmergencyShutdown() {
     Serial.println("Task3 - EMERGENCY protocol is being executed...");
   // Send XML data to update the server
   server.send(200, "text/plain", "");
+}
+
+void Interrupting_Function(void *pvParameters) {
+  // pensando o que colocar aqui
+  
 }
