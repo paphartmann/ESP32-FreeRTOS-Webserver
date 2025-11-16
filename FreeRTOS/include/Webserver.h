@@ -226,7 +226,7 @@ const char PAGE_MAIN[] PROGMEM = R"=====(
     <main class="container" style="margin-top:70px">
       <div class="category">Sensor Readings</div>
       <div style="border-radius: 10px !important;">
-      <table style="width:50%">
+      <table style="width:40%">
       <colgroup>
         <col span="1" style="background-color:rgb(230,230,230); width: 20%; color:#000000 ;">
         <col span="1" style="background-color:rgb(200,200,200); width: 15%; color:#000000 ;">
@@ -241,12 +241,12 @@ const char PAGE_MAIN[] PROGMEM = R"=====(
         <th colspan="1"><div class="heading">Volts</div></th>
       </tr>
       <tr>
-        <td><div class="bodytext">Analog pin 34</div></td>
+        <td><div class="bodytext">IR Analog Reading</div></td>
         <td><div class="tabledata" id = "b0"></div></td>
         <td><div class="tabledata" id = "v0"></div></td>
       </tr>
       <tr>
-        <td><div class="bodytext">Analog pin 35</div></td>
+        <td><div class="bodytext">LDR Analog Reading</div></td>
         <td><div class="tabledata" id = "b1"></div></td>
         <td><div class="tabledata" id = "v1"></div></td>
       </tr>
@@ -291,7 +291,7 @@ const char PAGE_MAIN[] PROGMEM = R"=====(
           </div>
             <!-- Add this section for DHT11 live readings -->
           <div style="margin-top: 20px;">
-            <div class="category">Live Readings</div>
+            <div class="category">DHT Live Readings</div>
             <table style="width:50%">
               <tr>
                 <td><div class="heading">Temp(&deg;C)</div></td>
@@ -336,13 +336,6 @@ const char PAGE_MAIN[] PROGMEM = R"=====(
     <div class="bodytext">Switch</div>
     <button type="button" class = "btn" id = "btn1" onclick="ButtonPress1()">Toggle</button>
     </div>
-    <br>
-    <br>
-    <div class="bodytext">Fan Speed Control (RPM: <span id="fanrpm"></span>)</div>
-    <br>
-    <input type="range" class="fanrpmslider" min="0" max="255" value = "0" width = "0%" oninput="UpdateSlider(this.value)"/>
-    <br>
-    <br>
   </main>
 
   <footer div class="foot" id = "temp" >Embedded System Design Semester Project</div></footer>
