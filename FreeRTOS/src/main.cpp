@@ -50,13 +50,13 @@ TaskHandle_t serverTask;
 TaskHandle_t Task1Handle = NULL;
 TaskHandle_t Task2Handle = NULL;
 TaskHandle_t Task3Handle = NULL;
-TaskHandle_t TaskIntHandle = NULL;
+TaskHandle_t TaskInterruptHandle = NULL;
 
-void Interrupting_Function(void *pvParameters);
 void IR_Sensor_Function(void *pvParameters);
 void DHT_Sensor_Function(void *pvParameters);
 void Emergency_Function(void *pvParameters);
-void ServerTask(void *pvParameters);  
+void ServerTask(void *pvParameters);
+void Interrupting_Function(void *pvParameters);  
 void EmergencyShutdown();
 
 void ADC_Function(void *pvParameters);
@@ -103,7 +103,7 @@ void setup() {
   xTaskCreatePinnedToCore(IR_Sensor_Function, "Task1", 8192, NULL, 2, &Task1Handle, 0);
   xTaskCreatePinnedToCore(DHT_Sensor_Function, "Task2", 8192, NULL, 2, &Task2Handle, 0);
   xTaskCreatePinnedToCore(Emergency_Function, "Task3", 8192, NULL, 3, &Task3Handle, 0);
-  xTaskCreatePinnedToCore(Interrupting_Function, "InterruptingTask", 8192, NULL, 3, &TaskIntHandle, 0);
+  xTaskCreatePinnedToCore(Interrupting_Function, "InterruptingTask", 8192, NULL, 1, &TaskInterruptHandle, 0);
 
   // Create a server task pinned to core 1
   xTaskCreatePinnedToCore(ServerTask, "serverTask", 4096, NULL, 3, &serverTask, 1);
@@ -272,8 +272,22 @@ void IR_Sensor_Function(void *pvParameters) {
 void DHT_Sensor_Function(void *pvParameters) {
   taskCount++;
   while (1) {
+    float oldTemperature = temperatureDHT;
+    float oldHumidity = humidityDHT;
+
     temperatureDHT = dht.readTemperature();
     humidityDHT = dht.readHumidity();
+
+    // If value returns nan, just send the old value
+    if (isnan(temperatureDHT))
+    {
+      temperatureDHT = oldTemperature;
+    }
+
+    if (isnan(humidityDHT))
+    {
+      humidityDHT = oldHumidity;
+    }
 
     Serial.print("Task2 - Temperature: ");
     Serial.print(temperatureDHT);
@@ -339,6 +353,10 @@ void EmergencyShutdown() {
 }
 
 void Interrupting_Function(void *pvParameters) {
-  // pensando o que colocar aqui
-  
+  taskCount++;
+  while(1)
+  {
+    // pensando o que colocar aqui
+    // vTaskDelay(pdMS_TO_TICKS(10));  // Adjust the delay as needed
+  }
 }
