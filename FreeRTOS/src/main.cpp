@@ -34,6 +34,7 @@ bool emergencyShutdownActive = false;
 int taskCount = 0;
 float temperatureDHT = 0.0;
 float humidityDHT = 0.0;
+unsigned prime_nr = 1;
 
 char XML[2048];
 char buf[32];
@@ -352,11 +353,29 @@ void EmergencyShutdown() {
   server.send(200, "text/plain", "");
 }
 
+bool isPrime(int n)
+{
+    // 0 and 1 are not prime numbers
+    if (n == 1 || n == 0)
+        return false;
+
+    // Check for divisibility from 2 to sqrt(n)
+    for (int i = 2; i <= sqrt(n); i++) {
+        if (n % i == 0)
+            return false;
+    }
+    return true;
+}
+
 void Interrupting_Function(void *pvParameters) {
   taskCount++;
   while(1)
   {
-    // pensando o que colocar aqui
-    // vTaskDelay(pdMS_TO_TICKS(10));  // Adjust the delay as needed
+    for (int i = 1;; i++) {
+        if (isPrime(i)) {
+          prime_nr = i;
+        }
+    }
+    vTaskDelay(pdMS_TO_TICKS(10));  // Adjust the delay as needed
   }
 }
