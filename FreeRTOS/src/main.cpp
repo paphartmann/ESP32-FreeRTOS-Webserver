@@ -369,13 +369,13 @@ bool isPrime(int n)
 
 void Interrupting_Function(void *pvParameters) {
   taskCount++;
+  unsigned i = 1;
   while(1)
   {
-    for (int i = 1;; i++) {
-        if (isPrime(i)) {
-          prime_nr = i;
-        }
+    if (isPrime(i)) {
+      prime_nr = i++;
     }
+
     vTaskDelay(pdMS_TO_TICKS(10));  // Adjust the delay as needed
   }
 }
