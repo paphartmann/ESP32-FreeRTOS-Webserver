@@ -373,8 +373,9 @@ void Interrupting_Function(void *pvParameters) {
   while(1)
   {
     if (isPrime(i)) {
-      prime_nr = i++;
+      prime_nr = i;
     }
+    i += 1
 
     vTaskDelay(pdMS_TO_TICKS(10));  // Adjust the delay as needed
   }
