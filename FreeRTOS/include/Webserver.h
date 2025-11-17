@@ -282,11 +282,11 @@ const char PAGE_MAIN[] PROGMEM = R"=====(
         </table>
         <!-- Add the live tasks section -->
         <div style="margin-top: 20px;">
-          <div class="category">Task Information</div>
+          <div class="category">Prime number Information</div>
           <div style="display: flex; justify-content: center; align-items: center; flex-direction: column;">
-            <div class="heading">Total Tasks</div>
+            <div class="heading">Prime count</div>
             <div class="circle">
-              <div id="taskCount" class="circle-data"></div>
+              <div id="prime_nr" class="circle-data"></div>
             </div>
           </div>
             <!-- Add this section for DHT11 live readings -->

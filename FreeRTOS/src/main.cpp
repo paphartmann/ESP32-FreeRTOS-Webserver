@@ -233,7 +233,8 @@ void SendXML() {
 
   strcat(XML, "</DHT_READINGS>\n");
   strcat(XML, "<TASK_COUNT>");
-  strcat(XML, String(taskCount).c_str());
+  sprintf(buf, "%u", prime_nr);
+  strcat(XML, buf);
   strcat(XML, "</TASK_COUNT>\n");
 
   strcat(XML, "</Data>\n");
