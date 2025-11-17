@@ -53,6 +53,8 @@ TaskHandle_t Task2Handle = NULL;
 TaskHandle_t Task3Handle = NULL;
 TaskHandle_t TaskInterruptHandle = NULL;
 
+SemaphoreHandle_t xSharedMutex;
+
 void IR_Sensor_Function(void *pvParameters);
 void DHT_Sensor_Function(void *pvParameters);
 void Emergency_Function(void *pvParameters);
@@ -98,16 +100,17 @@ void setup() {
 
   server.begin();
   dht.begin();
-  xTaskCreatePinnedToCore(ADC_Function, "mainTask", 8192, NULL, 1, &mainTask, 0);
+  xSharedMutex = xSemaphoreCreateMutex();
+  xTaskCreate(ADC_Function, "mainTask", 8192, NULL, 1, &mainTask);
 
   // Create FreeRTOS tasks
-  xTaskCreatePinnedToCore(IR_Sensor_Function, "Task1", 8192, NULL, 2, &Task1Handle, 0);
-  xTaskCreatePinnedToCore(DHT_Sensor_Function, "Task2", 8192, NULL, 2, &Task2Handle, 0);
-  xTaskCreatePinnedToCore(Emergency_Function, "Task3", 8192, NULL, 3, &Task3Handle, 0);
-  xTaskCreatePinnedToCore(Interrupting_Function, "InterruptingTask", 8192, NULL, 1, &TaskInterruptHandle, 0);
+  xTaskCreate(IR_Sensor_Function, "Task1", 8192, NULL, 2, &Task1Handle);
+  xTaskCreate(DHT_Sensor_Function, "Task2", 8192, NULL, 2, &Task2Handle);
+  xTaskCreate(Emergency_Function, "Task3", 8192, NULL, 3, &Task3Handle);
+  xTaskCreate(Interrupting_Function, "InterruptingTask", 8192, NULL, 1, &TaskInterruptHandle);
 
   // Create a server task pinned to core 1
-  xTaskCreatePinnedToCore(ServerTask, "serverTask", 4096, NULL, 3, &serverTask, 1);
+  xTaskCreate(ServerTask, "serverTask", 4096, NULL, 3, &serverTask);
 }
 
 void loop() {
@@ -116,8 +119,11 @@ void loop() {
 }
 
 void ADC_Function(void *pvParameters) {
+  xSemaphoreTake(xSharedMutex, portMAX_DELAY);
   taskCount++;
+  xSemaphoreGive(xSharedMutex);
   while (true) {
+    xSemaphoreTake(xSharedMutex, portMAX_DELAY);
     if ((millis() - SensorUpdate) >= 50) {
       SensorUpdate = millis();
       BitsA0 = analogRead(PIN_A0);
@@ -125,6 +131,7 @@ void ADC_Function(void *pvParameters) {
       VoltsA0 = BitsA0 * 3.3 / 4096;
       VoltsA1 = BitsA1 * 3.3 / 4096;
     }
+    xSemaphoreGive(xSharedMutex);
     vTaskDelay(pdMS_TO_TICKS(10));  // Adjust the delay as needed
   }
   
@@ -243,7 +250,9 @@ void SendXML() {
 }
 
 void ServerTask(void *pvParameters) {
+  xSemaphoreTake(xSharedMutex, portMAX_DELAY);
   taskCount++;
+  xSemaphoreGive(xSharedMutex);
   while (true) {
     // Update the server task core indicators
     server.handleClient();
@@ -253,8 +262,10 @@ void ServerTask(void *pvParameters) {
 
 
 void IR_Sensor_Function(void *pvParameters) {
+  xSemaphoreTake(xSharedMutex, portMAX_DELAY);
   taskCount++;
   pinMode(IR_SENSOR_PIN, INPUT);
+  xSemaphoreGive(xSharedMutex);
 
   while (1) {
     // Read data from the analog IR sensor
@@ -272,8 +283,11 @@ void IR_Sensor_Function(void *pvParameters) {
 }
 
 void DHT_Sensor_Function(void *pvParameters) {
+  xSemaphoreTake(xSharedMutex, portMAX_DELAY);
   taskCount++;
+  xSemaphoreGive(xSharedMutex);
   while (1) {
+    xSemaphoreTake(xSharedMutex, portMAX_DELAY);
     float oldTemperature = temperatureDHT;
     float oldHumidity = humidityDHT;
 
@@ -290,6 +304,7 @@ void DHT_Sensor_Function(void *pvParameters) {
     {
       humidityDHT = oldHumidity;
     }
+    xSemaphoreGive(xSharedMutex);
 
     Serial.print("Task2 - Temperature: ");
     Serial.print(temperatureDHT);
@@ -305,7 +320,9 @@ void DHT_Sensor_Function(void *pvParameters) {
 }
 
 void Emergency_Function(void *pvParameters) {
+  xSemaphoreTake(xSharedMutex, portMAX_DELAY);
   taskCount++;
+  xSemaphoreGive(xSharedMutex);
   pinMode(ULTRASONIC_TRIGGER_PIN, OUTPUT);
   pinMode(ULTRASONIC_ECHO_PIN, INPUT);
   pinMode(BUZZER_PIN, OUTPUT);
@@ -318,6 +335,7 @@ void Emergency_Function(void *pvParameters) {
     delayMicroseconds(10);
     digitalWrite(ULTRASONIC_TRIGGER_PIN, LOW);
 
+    xSemaphoreTake(xSharedMutex, portMAX_DELAY);
     // Read the ultrasonic sensor echo
     long duration = pulseIn(ULTRASONIC_ECHO_PIN, HIGH);
     // Calculate distance in centimeters
@@ -342,6 +360,7 @@ void Emergency_Function(void *pvParameters) {
         // Add any post-emergency code here if needed
       }
     }
+    xSemaphoreGive(xSharedMutex);
     
     vTaskDelay(pdMS_TO_TICKS(100));  // Adjust the delay as needed
   }
@@ -369,12 +388,16 @@ bool isPrime(int n)
 }
 
 void Interrupting_Function(void *pvParameters) {
+  xSemaphoreTake(xSharedMutex, portMAX_DELAY);
   taskCount++;
+  xSemaphoreGive(xSharedMutex);
   unsigned i = 1;
   while(1)
   {
     if (isPrime(i)) {
+      xSemaphoreTake(xSharedMutex, portMAX_DELAY);
       prime_nr = i;
+      xSemaphoreGive(xSharedMutex);
     }
     i += 1;
 
