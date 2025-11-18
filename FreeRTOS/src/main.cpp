@@ -316,15 +316,17 @@ void DHT_Sensor_Function(void *pvParameters) {
     humidityDHT = dht.readHumidity();
 
     // If value returns nan, just send the old value
-    if (isnan(temperatureDHT))
-    {
-      temperatureDHT = oldTemperature;
-    }
+    // removido (fica mais confuso com isso)
+    // if (isnan(temperatureDHT))
+    // {
+    //   temperatureDHT = oldTemperature;
+    // }
 
-    if (isnan(humidityDHT))
-    {
-      humidityDHT = oldHumidity;
-    }
+    // if (isnan(humidityDHT))
+    // {
+    //   humidityDHT = oldHumidity;
+    // }
+
     xSemaphoreGive(xSharedMutex);
 
     Serial.print("Task2 - Temperature: ");
