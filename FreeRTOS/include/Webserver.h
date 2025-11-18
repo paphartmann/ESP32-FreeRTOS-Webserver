@@ -282,11 +282,11 @@ const char PAGE_MAIN[] PROGMEM = R"=====(
         </table>
         <!-- Add the live tasks section -->
         <div style="margin-top: 20px;">
-          <div class="category">Prime number Information</div>
+          <div class="category">Task Information</div>
           <div style="display: flex; justify-content: center; align-items: center; flex-direction: column;">
-            <div class="heading">Prime count</div>
+            <div class="left-element">Total Tasks</div>
             <div class="circle">
-              <div id="prime_nr" class="circle-data"></div>
+              <div id="taskCount" class="circle-data"></div>
             </div>
           </div>
             <!-- Add this section for DHT11 live readings -->
@@ -329,10 +329,16 @@ const char PAGE_MAIN[] PROGMEM = R"=====(
     <br>
     <div class="category">Sensor Controls</div>
     <br>
-    <div class="bodytext">Inbuilt LED </div>
+    <div class="bodytext">Inbuilt LED (Creates/Deletes Prime Number Task) </div>
     <button type="button" class = "btn" id = "btn0" onclick="ButtonPress0()">Toggle</button>
     </div>
     <br>
+     <div style="display: flex; justify-content: center; align-items: center; flex-direction: column;">
+      <div class="right-element">Prime Number</div>
+      <div class="circle">
+        <div id="prime_nr" class="circle-data"></div>
+      </div>
+    </div>
     <div class="bodytext">Switch</div>
     <button type="button" class = "btn" id = "btn1" onclick="ButtonPress1()">Toggle</button>
     </div>
@@ -536,6 +542,9 @@ const char PAGE_MAIN[] PROGMEM = R"=====(
       xmldoc = xmlResponse.getElementsByTagName("TASK_COUNT");
       var taskCount = xmldoc[0].firstChild.nodeValue;
       document.getElementById("taskCount").innerHTML = taskCount;
+      xmldoc = xmlResponse.getElementsByTagName("PRIME_NUMBER");
+      var prime_nr = xmldoc[0].firstChild.nodeValue;
+      document.getElementById("prime_nr").innerHTML = prime_nr;
       // Fetch and update DHT11 live readings
       xmldoc = xmlResponse.getElementsByTagName("DHT_READINGS");
       var dhtTemperature = xmldoc[0].getElementsByTagName("TEMP")[0].firstChild.nodeValue;
