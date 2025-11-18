@@ -107,7 +107,7 @@ void setup() {
   xTaskCreate(IR_Sensor_Function, "Task1", 8192, NULL, 2, &Task1Handle);
   xTaskCreate(DHT_Sensor_Function, "Task2", 8192, NULL, 2, &Task2Handle);
   xTaskCreate(Emergency_Function, "Task3", 8192, NULL, 3, &Task3Handle);
-  // xTaskCreate(Interrupting_Function, "InterruptingTask", 8192, NULL, 1, &TaskInterruptHandle);
+  // xTaskCreate(Interrupting_Function, "InterruptingTask", 8192, NULL, 3, &TaskInterruptHandle);
 
   // Create a server task pinned to core 1
   xTaskCreate(ServerTask, "serverTask", 4096, NULL, 3, &serverTask);
@@ -162,7 +162,7 @@ void ProcessButton_0() {
 
   if (!TaskInterruptHandle)
   {
-    xTaskCreate(Interrupting_Function, "InterruptingTask", 8192, NULL, 1, &TaskInterruptHandle);
+    xTaskCreate(Interrupting_Function, "InterruptingTask", 8192, NULL, 3, &TaskInterruptHandle);
   }
   else
   {
@@ -424,6 +424,6 @@ void Interrupting_Function(void *pvParameters) {
     }
     i += 1;
 
-    vTaskDelay(pdMS_TO_TICKS(10));  // Adjust the delay as needed
+    // vTaskDelay(pdMS_TO_TICKS(1));  // Adjust the delay as needed
   }
 }
